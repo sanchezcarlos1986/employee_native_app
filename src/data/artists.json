@@ -1,0 +1,25 @@
+{
+    "artists": [
+        {
+            "id": "1",
+            "uri":
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT22pwGXpN3gNIUyBCau2o0aWbEueKzY7R3bg&usqp=CAU",
+            "name": "松原 みき",
+            "position": "Singer"
+          },
+          {
+            "id": "2",
+            "uri":
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSkJppQ-z0Zbt731fYj2FAb9gOIm9Zd9I6jg&usqp=CAU",
+            "name": "竹内 まりや",
+            "position": "Singer"
+          },
+          {
+            "id": "3",
+            "uri":
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRg-sUgZvsudQZCizYfX0GMudJo6xbl1WBSlA&usqp=CAU",
+            "name": "森高千里",
+            "position": "Singer"
+          }
+    ]
+}
