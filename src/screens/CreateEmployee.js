@@ -50,6 +50,7 @@ const CreateEmployee = () => {
         style={styles.inputStyle}
         icon="upload"
         mode="contained"
+        theme={theme}
         onPress={() => setModal(true)}>
         Upload Image
       </Button>
@@ -57,6 +58,7 @@ const CreateEmployee = () => {
         style={styles.inputStyle}
         icon="content-save"
         mode="contained"
+        theme={theme}
         onPress={() => console.log('saved')}>
         Save
       </Button>
@@ -70,17 +72,19 @@ const CreateEmployee = () => {
             <Button
               icon="camera"
               mode="contained"
+              theme={theme}
               onPress={() => console.log('pressed')}>
               Camera
             </Button>
             <Button
               icon="camera"
               mode="contained"
+              theme={theme}
               onPress={() => console.log('pressed')}>
               Gallery
             </Button>
           </View>
-          <Button icon="close" onPress={() => setModal(false)}>
+          <Button icon="close" theme={theme} onPress={() => setModal(false)}>
             Close
           </Button>
         </View>

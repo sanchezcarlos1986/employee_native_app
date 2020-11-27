@@ -1,22 +1,16 @@
 import React from 'react';
 import {StyleSheet, View, Image, Text, Linking, Platform} from 'react-native';
 import {LinearGradient} from 'expo-linear-gradient';
-import {Avatar, Button, Card, Title, Paragraph} from 'react-native-paper';
+import {Button, Card, Title} from 'react-native-paper';
 import {MaterialIcons, Entypo} from '@expo/vector-icons';
 import {theme} from '~/constants';
 
-import {artists} from '~/data/artists.json';
+const Profile = ({route}) => {
+  const {
+    params: {artist},
+  } = route;
 
-const Profile = () => {
-  const artist = artists.find(item => item.id === '4' || null);
-  const {uri, name, position, email, phone, salary} = {
-    uri: artist.uri,
-    name: artist.name,
-    position: artist.position,
-    email: 'naoki.urusawa@gmail.com',
-    phone: '+56994738551',
-    salary: '999999円',
-  };
+  const {uri, name, position, email, phone, salary} = artist;
 
   const openDial = tel => {
     const telBase = Platform.OS === 'android' ? 'tel' : 'telprompt';

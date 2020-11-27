@@ -10,7 +10,9 @@ const Home = ({navigation}) => {
     <View style={styles.root}>
       <FlatList
         data={artists}
-        renderItem={({item}) => <ArtistCard {...item} />}
+        renderItem={({item}) => (
+          <ArtistCard artist={item} navigation={navigation} />
+        )}
         keyExtractor={item => item.id}
       />
       <FAB
