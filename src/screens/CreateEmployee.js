@@ -4,6 +4,26 @@ import {TextInput, Button} from 'react-native-paper';
 import {theme} from '~/constants';
 import * as ImagePicker from 'expo-image-picker';
 
+const setNewFile = pickerResult => {
+  const splittedUri = pickerResult.uri.split('.');
+  const imgType = splittedUri[splittedUri.length - 1];
+
+  const newFile = {
+    uri: pickerResult.uri,
+    type: `test/${imgType}`,
+    name: `test.${imgType}`,
+  };
+
+  return newFile;
+};
+
+const uploadImageSetting = {
+  mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  allowsEditing: false,
+  aspect: [1, 1],
+  quality: 0.6,
+};
+
 const CreateEmployee = () => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -20,14 +40,13 @@ const CreateEmployee = () => {
       return;
     }
 
-    let pickerResult = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.6,
-    });
+    let pickerResult = await ImagePicker.launchImageLibraryAsync(
+      uploadImageSetting,
+    );
 
-    console.log(pickerResult);
+    const newFile = setNewFile(pickerResult);
+
+    handleUploadImage(newFile);
   };
 
   const pickFromCamera = async () => {
@@ -38,14 +57,33 @@ const CreateEmployee = () => {
       return;
     }
 
-    let pickerResult = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.6,
-    });
+    let pickerResult = await ImagePicker.launchCameraAsync(uploadImageSetting);
 
-    console.log(pickerResult);
+    const newFile = setNewFile(pickerResult);
+
+    handleUploadImage(newFile);
+  };
+
+  const handleUploadImage = image => {
+    const cloudName = 'daqb6phbs';
+    const formData = new FormData();
+
+    formData.append('file', image);
+    formData.append('upload_preset', 'hleqk5ei');
+    formData.append('cloud_name', cloudName);
+
+    const apiBaseURL = `https://api.cloudinary.com/v1_1/${cloudName}/upload`;
+
+    fetch(apiBaseURL, {
+      method: 'post',
+      body: formData,
+    })
+      .then(res => res.json())
+      .then(data => {
+        // console.log('handleUpload =====>', {data});
+        setPicture(data.url);
+        setModal(false);
+      });
   };
 
   return (
@@ -85,7 +123,7 @@ const CreateEmployee = () => {
       />
       <Button
         style={styles.inputStyle}
-        icon="upload"
+        icon={!picture ? 'upload' : 'check'}
         mode="contained"
         theme={theme}
         onPress={() => setModal(true)}>
