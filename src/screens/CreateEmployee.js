@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {StyleSheet, View, Text, Modal} from 'react-native';
 import {TextInput, Button} from 'react-native-paper';
+import {theme} from '~/constants';
 
 const CreateEmployee = () => {
   const [name, setName] = useState('');
@@ -86,12 +87,6 @@ const CreateEmployee = () => {
       </Modal>
     </View>
   );
-};
-
-const theme = {
-  colors: {
-    primary: 'tomato',
-  },
 };
 
 const styles = StyleSheet.create({

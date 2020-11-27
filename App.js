@@ -1,14 +1,12 @@
 import Constants from 'expo-constants';
-console.log('Constants:', Constants);
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-// import Home from '~/screens/Home';
-import CreateEmployee from '~/screens/CreateEmployee';
+import {Home, CreateEmployee, Profile} from '~/screens';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <CreateEmployee />
+      <Profile />
     </View>
   );
 }

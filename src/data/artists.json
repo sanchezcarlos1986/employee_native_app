@@ -20,6 +20,13 @@
               "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRg-sUgZvsudQZCizYfX0GMudJo6xbl1WBSlA&usqp=CAU",
             "name": "森高千里",
             "position": "Singer"
+          },
+          {
+            "id": "4",
+            "uri":
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZQNh20_YvGBSCB3VO07MshBrlOvXBIiO2gg&usqp=CAU",
+            "name": "浦沢 直樹",
+            "position": "Mangaka"
           }
     ]
 }
