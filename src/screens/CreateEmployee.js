@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {StyleSheet, View, Text, Modal} from 'react-native';
 import {TextInput, Button} from 'react-native-paper';
 import {theme} from '~/constants';
+import * as ImagePicker from 'expo-image-picker';
 
 const CreateEmployee = () => {
   const [name, setName] = useState('');
@@ -10,6 +11,42 @@ const CreateEmployee = () => {
   const [salary, setSalary] = useState('');
   const [picture, setPicture] = useState('');
   const [modal, setModal] = useState(false);
+
+  const pickFromGallery = async () => {
+    const permissionResult = await ImagePicker.requestCameraRollPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert('Permission to access camera roll is required!');
+      return;
+    }
+
+    let pickerResult = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.6,
+    });
+
+    console.log(pickerResult);
+  };
+
+  const pickFromCamera = async () => {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert('Permission to access camera roll is required!');
+      return;
+    }
+
+    let pickerResult = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.6,
+    });
+
+    console.log(pickerResult);
+  };
 
   return (
     <View style={styles.root}>
@@ -73,14 +110,14 @@ const CreateEmployee = () => {
               icon="camera"
               mode="contained"
               theme={theme}
-              onPress={() => console.log('pressed')}>
+              onPress={() => pickFromCamera()}>
               Camera
             </Button>
             <Button
-              icon="camera"
+              icon="image"
               mode="contained"
               theme={theme}
-              onPress={() => console.log('pressed')}>
+              onPress={() => pickFromGallery()}>
               Gallery
             </Button>
           </View>
