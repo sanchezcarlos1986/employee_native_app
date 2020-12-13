@@ -8,11 +8,11 @@ const ArtistCard = props => {
 
   return (
     <Card
-      style={styles.myCard}
       key={id}
-      onPress={() => navigation.navigate('Profile', {artist})}>
+      onPress={() => navigation.navigate('Profile', {artist})}
+      style={styles.card}>
       <View style={styles.cardView}>
-        <Image style={styles.myImage} source={{uri}} />
+        <Image source={{uri}} style={styles.image} />
         <View style={{marginLeft: 10}}>
           <Text style={styles.text}>{name}</Text>
           <Text style={styles.text}>{position}</Text>
@@ -22,23 +22,23 @@ const ArtistCard = props => {
   );
 };
 
-const imageSize = 50;
+const size = 60;
 
 const styles = StyleSheet.create({
-  myCard: {
-    margin: 5,
-  },
   cardView: {
     flexDirection: 'row',
     padding: 6,
   },
-  myImage: {
-    borderRadius: imageSize / 2,
-    height: imageSize,
-    width: imageSize,
+  card: {
+    margin: 5,
   },
   text: {
     fontSize: 15,
+  },
+  image: {
+    borderRadius: size / 2,
+    height: size,
+    width: size,
   },
 });
 

@@ -1,28 +1,8 @@
 import React, {useState} from 'react';
-import {StyleSheet, View, Text, Modal} from 'react-native';
+import {StyleSheet, View, Modal} from 'react-native';
 import {TextInput, Button} from 'react-native-paper';
 import {theme} from '~/constants';
-import * as ImagePicker from 'expo-image-picker';
-
-const setNewFile = pickerResult => {
-  const splittedUri = pickerResult.uri.split('.');
-  const imgType = splittedUri[splittedUri.length - 1];
-
-  const newFile = {
-    uri: pickerResult.uri,
-    type: `test/${imgType}`,
-    name: `test.${imgType}`,
-  };
-
-  return newFile;
-};
-
-const uploadImageSetting = {
-  mediaTypes: ImagePicker.MediaTypeOptions.Images,
-  allowsEditing: false,
-  aspect: [1, 1],
-  quality: 0.6,
-};
+import {pickImageFrom} from '~/helpers';
 
 const CreateEmployee = () => {
   const [name, setName] = useState('');
@@ -32,59 +12,7 @@ const CreateEmployee = () => {
   const [picture, setPicture] = useState('');
   const [modal, setModal] = useState(false);
 
-  const pickFromGallery = async () => {
-    const permissionResult = await ImagePicker.requestCameraRollPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      alert('Permission to access camera roll is required!');
-      return;
-    }
-
-    let pickerResult = await ImagePicker.launchImageLibraryAsync(
-      uploadImageSetting,
-    );
-
-    const newFile = setNewFile(pickerResult);
-
-    handleUploadImage(newFile);
-  };
-
-  const pickFromCamera = async () => {
-    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      alert('Permission to access camera roll is required!');
-      return;
-    }
-
-    let pickerResult = await ImagePicker.launchCameraAsync(uploadImageSetting);
-
-    const newFile = setNewFile(pickerResult);
-
-    handleUploadImage(newFile);
-  };
-
-  const handleUploadImage = image => {
-    const cloudName = 'daqb6phbs';
-    const formData = new FormData();
-
-    formData.append('file', image);
-    formData.append('upload_preset', 'hleqk5ei');
-    formData.append('cloud_name', cloudName);
-
-    const apiBaseURL = `https://api.cloudinary.com/v1_1/${cloudName}/upload`;
-
-    fetch(apiBaseURL, {
-      method: 'post',
-      body: formData,
-    })
-      .then(res => res.json())
-      .then(data => {
-        // console.log('handleUpload =====>', {data});
-        setPicture(data.url);
-        setModal(false);
-      });
-  };
+  const uploadImage = type => pickImageFrom(type, setPicture, setModal);
 
   return (
     <View style={styles.root}>
@@ -148,14 +76,14 @@ const CreateEmployee = () => {
               icon="camera"
               mode="contained"
               theme={theme}
-              onPress={() => pickFromCamera()}>
+              onPress={() => uploadImage('camera')}>
               Camera
             </Button>
             <Button
               icon="image"
               mode="contained"
               theme={theme}
-              onPress={() => pickFromGallery()}>
+              onPress={() => uploadImage('gallery')}>
               Gallery
             </Button>
           </View>

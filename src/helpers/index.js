@@ -1,2 +1,3 @@
-export {default as pickFromGallery} from './pickFromGallery';
-export {default as pickFromCamera} from './pickFromCamera';
+export {default as handleUploadImage} from './handleUploadImage';
+export {default as setNewFile} from './setNewFile';
+export {default as pickImageFrom} from './pickImageFrom';
