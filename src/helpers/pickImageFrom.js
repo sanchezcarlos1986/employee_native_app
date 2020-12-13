@@ -8,7 +8,7 @@ const uploadImageSetting = {
   quality: 0.6,
 };
 
-export const pickImageFrom = async pickerType => {
+export const pickImageFrom = async (pickerType, setLoadingImage) => {
   if (pickerType !== 'camera' && pickerType !== 'gallery') return false;
 
   const permissionType =
@@ -29,7 +29,7 @@ export const pickImageFrom = async pickerType => {
 
   const newFile = setNewFile(pickerResult);
 
-  return handleUploadImage(newFile);
+  return handleUploadImage(newFile, setLoadingImage);
 };
 
 export default pickImageFrom;

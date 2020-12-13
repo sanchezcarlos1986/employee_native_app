@@ -2,17 +2,17 @@ import React from 'react';
 import {StyleSheet, Text, View, Image} from 'react-native';
 import {Card} from 'react-native-paper';
 
-const ArtistCard = props => {
-  const {artist, navigation} = props;
-  const {id, uri, name, position} = artist;
+const EmployeeCard = props => {
+  const {employee, navigation} = props;
+  const {id, picture, name, position} = employee;
 
   return (
     <Card
       key={id}
-      onPress={() => navigation.navigate('Profile', {artist})}
+      onPress={() => navigation.navigate('Profile', {employee})}
       style={styles.card}>
       <View style={styles.cardView}>
-        <Image source={{uri}} style={styles.image} />
+        <Image source={{uri: picture}} style={styles.image} />
         <View style={{marginLeft: 10}}>
           <Text style={styles.text}>{name}</Text>
           <Text style={styles.text}>{position}</Text>
@@ -42,4 +42,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ArtistCard;
+export default EmployeeCard;

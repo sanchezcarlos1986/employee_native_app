@@ -7,10 +7,10 @@ import {theme} from '~/constants';
 
 const Profile = ({route}) => {
   const {
-    params: {artist},
+    params: {employee},
   } = route;
 
-  const {uri, name, position, email, phone, salary} = artist;
+  const {picture, name, position, email, phone, salary} = employee;
 
   const openDial = tel => {
     const telBase = Platform.OS === 'android' ? 'tel' : 'telprompt';
@@ -26,7 +26,7 @@ const Profile = ({route}) => {
         }}
       />
       <View style={styles.myImageView}>
-        <Image style={styles.myImage} source={{uri}} />
+        <Image style={styles.myImage} source={{uri: picture}} />
       </View>
       <View style={styles.profileText}>
         <Title>{name}</Title>

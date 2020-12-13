@@ -1,135 +1,175 @@
 import React, {useState} from 'react';
-import {StyleSheet, View, Modal, Image} from 'react-native';
-import {TextInput, Button, ActivityIndicator, Colors} from 'react-native-paper';
-import {theme} from '~/constants';
+import {
+  StyleSheet,
+  View,
+  Modal,
+  Image,
+  SafeAreaView,
+  ScrollView,
+} from 'react-native';
+import {TextInput, Button, ActivityIndicator, Title} from 'react-native-paper';
+import {theme, defaultAvatar} from '~/constants';
+import Constants from 'expo-constants';
 import {pickImageFrom} from '~/helpers/pickImageFrom';
+import firebase from '~/database/firebase';
 
-const defaultAvatar =
-  'https://kctherapy.com/wp-content/uploads/2019/09/default-user-avatar-300x293.png';
-
-const CreateEmployee = () => {
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [salary, setSalary] = useState('');
+const CreateEmployee = ({navigation}) => {
+  const [name, setName] = useState('Carlos');
+  const [phone, setPhone] = useState('9999');
+  const [email, setEmail] = useState('carlos@gmail.com');
+  const [position, setPosition] = useState('Front End Developer');
+  const [salary, setSalary] = useState('999999');
   const [picture, setPicture] = useState('');
-  const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState(false);
+  const [creatingUser, setCreatingUser] = useState(false);
+  const [loadingImage, setLoadingImage] = useState(false);
 
   const uploadImage = async type => {
-    setLoading(true);
-    const imgURL = await pickImageFrom(type);
+    const imgURL = await pickImageFrom(type, setLoadingImage);
 
     if (imgURL) {
       setPicture(imgURL);
       setModal(false);
-      setLoading(false);
+      setLoadingImage(false);
     }
   };
 
-  const createNewEmployee = () => {
-    const data = {
-      name,
-      phone,
-      email,
-      salary,
-      picture,
-    };
+  const createNewEmployee = async () => {
+    if (name && email) {
+      setCreatingUser(true);
 
-    console.log('data:', {data});
+      const newEmployee = {
+        name,
+        phone,
+        position,
+        email: email.toLowerCase(),
+        salary,
+        picture: picture || defaultAvatar,
+      };
+
+      const response = await firebase.db
+        .collection('employees')
+        .add(newEmployee);
+
+      response && navigation.navigate('Home');
+    } else {
+      alert('Must enter a name and an email');
+    }
   };
 
   return (
-    <View style={styles.root}>
-      <View style={styles.myImageView}>
-        <Image
-          style={styles.myImage}
-          source={{uri: picture || defaultAvatar}}
-        />
-      </View>
-      {loading ? (
-        <View>
-          <ActivityIndicator animating={true} color={Colors.red800} />
-        </View>
-      ) : null}
-      <TextInput
-        label="Name"
-        value={name}
-        mode="outlined"
-        style={styles.inputStyle}
-        theme={theme}
-        onChangeText={text => setName(text)}
-      />
-      <TextInput
-        label="Phone"
-        value={phone}
-        mode="outlined"
-        style={styles.inputStyle}
-        keyboardType="number-pad"
-        theme={theme}
-        onChangeText={text => setPhone(text)}
-      />
-      <TextInput
-        label="Email"
-        value={email}
-        mode="outlined"
-        style={styles.inputStyle}
-        theme={theme}
-        onChangeText={text => setEmail(text)}
-      />
-      <TextInput
-        label="Salary"
-        value={salary}
-        mode="outlined"
-        style={styles.inputStyle}
-        theme={theme}
-        onChangeText={text => setSalary(text)}
-      />
-      <Button
-        style={styles.inputStyle}
-        icon={!picture ? 'upload' : 'check'}
-        mode="contained"
-        theme={theme}
-        disabled={picture !== ''}
-        onPress={() => setModal(true)}>
-        Upload Image
-      </Button>
-      <Button
-        style={styles.inputStyle}
-        icon="content-save"
-        mode="contained"
-        theme={theme}
-        onPress={createNewEmployee}>
-        Save
-      </Button>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modal}
-        onRequestClose={() => setModal(false)}>
-        <View style={styles.modalView}>
-          <View style={styles.modalButtonView}>
-            <Button
-              icon="camera"
-              mode="contained"
-              theme={theme}
-              onPress={() => uploadImage('camera')}>
-              Camera
-            </Button>
-            <Button
-              icon="image"
-              mode="contained"
-              theme={theme}
-              onPress={() => uploadImage('gallery')}>
-              Gallery
-            </Button>
+    <SafeAreaView>
+      <ScrollView>
+        <View style={styles.root}>
+          <View style={styles.myImageView}>
+            <Image
+              style={styles.myImage}
+              source={{uri: picture || defaultAvatar}}
+            />
           </View>
-          <Button icon="close" theme={theme} onPress={() => setModal(false)}>
-            Close
+          <Modal animationType="slide" visible={creatingUser || loadingImage}>
+            <View style={styles.modalUser}>
+              <Title style={styles.modalUserTitle}>
+                {creatingUser ? 'Creating User' : 'Uploading Image'}
+              </Title>
+              <ActivityIndicator
+                animating={true}
+                color={theme.colors.primary}
+                size="large"
+              />
+            </View>
+          </Modal>
+          <TextInput
+            label="Name"
+            value={name}
+            mode="outlined"
+            style={styles.inputStyle}
+            theme={theme}
+            onChangeText={text => setName(text)}
+          />
+          <TextInput
+            label="Phone"
+            value={phone}
+            mode="outlined"
+            style={styles.inputStyle}
+            keyboardType="number-pad"
+            theme={theme}
+            onChangeText={text => setPhone(text)}
+          />
+          <TextInput
+            label="Email"
+            value={email}
+            mode="outlined"
+            style={styles.inputStyle}
+            theme={theme}
+            onChangeText={text => setEmail(text)}
+          />
+          <TextInput
+            label="Position"
+            value={position}
+            mode="outlined"
+            style={styles.inputStyle}
+            theme={theme}
+            onChangeText={text => setPosition(text)}
+          />
+          <TextInput
+            label="Salary"
+            value={salary}
+            mode="outlined"
+            style={styles.inputStyle}
+            theme={theme}
+            onChangeText={text => setSalary(text)}
+          />
+          <Button
+            style={styles.inputStyle}
+            icon={!picture ? 'upload' : 'check'}
+            mode="contained"
+            theme={theme}
+            disabled={picture !== ''}
+            onPress={() => setModal(true)}>
+            Upload Image
           </Button>
+          <Button
+            style={styles.inputStyle}
+            icon="content-save"
+            mode="contained"
+            theme={theme}
+            onPress={createNewEmployee}>
+            Save
+          </Button>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modal}
+            onRequestClose={() => setModal(false)}>
+            <View style={styles.modalView}>
+              <View style={styles.modalButtonView}>
+                <Button
+                  icon="camera"
+                  mode="contained"
+                  theme={theme}
+                  onPress={() => uploadImage('camera')}>
+                  Camera
+                </Button>
+                <Button
+                  icon="image"
+                  mode="contained"
+                  theme={theme}
+                  onPress={() => uploadImage('gallery')}>
+                  Gallery
+                </Button>
+              </View>
+              <Button
+                icon="close"
+                theme={theme}
+                onPress={() => setModal(false)}>
+                Close
+              </Button>
+            </View>
+          </Modal>
         </View>
-      </Modal>
-    </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -139,7 +179,7 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     padding: 5,
-    paddingTop: 100,
+    paddingTop: Constants.statusBarHeight,
   },
   inputStyle: {
     margin: 5,
@@ -164,6 +204,16 @@ const styles = StyleSheet.create({
     width: imageSize,
     marginTop: -(imageSize / 2),
     borderRadius: imageSize / 2,
+    marginTop: Constants.statusBarHeight / 2,
+  },
+  modalUser: {
+    flex: 1,
+    padding: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalUserTitle: {
+    marginBottom: 16,
   },
 });
 
