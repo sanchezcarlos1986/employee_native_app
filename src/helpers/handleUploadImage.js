@@ -1,4 +1,4 @@
-const handleUploadImage = (image, setPicture, setModal) => {
+const handleUploadImage = async image => {
   const formData = new FormData();
   const CLOUD_NAME = 'daqb6phbs';
   const PRESET_NAME = 'hleqk5ei';
@@ -9,16 +9,15 @@ const handleUploadImage = (image, setPicture, setModal) => {
 
   const apiBaseURL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`;
 
-  fetch(apiBaseURL, {
+  const data = await fetch(apiBaseURL, {
     method: 'post',
     body: formData,
   })
     .then(res => res.json())
-    .then(data => {
-      console.log('handleUploadImage =====>', {data});
-      setPicture(data.url);
-      setModal(false);
-    });
+    .then(data => data);
+
+  const imgURL = data?.url;
+  return imgURL;
 };
 
 export default handleUploadImage;

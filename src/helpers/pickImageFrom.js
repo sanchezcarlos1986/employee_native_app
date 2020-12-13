@@ -1,5 +1,5 @@
 import * as ImagePicker from 'expo-image-picker';
-import {handleUploadImage, setNewFile} from '~/helpers';
+import {setNewFile, handleUploadImage} from '~/helpers';
 
 const uploadImageSetting = {
   mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -8,7 +8,7 @@ const uploadImageSetting = {
   quality: 0.6,
 };
 
-const pickImageFrom = async (pickerType, setPicture, setModal) => {
+export const pickImageFrom = async pickerType => {
   if (pickerType !== 'camera' && pickerType !== 'gallery') return false;
 
   const permissionType =
@@ -29,7 +29,7 @@ const pickImageFrom = async (pickerType, setPicture, setModal) => {
 
   const newFile = setNewFile(pickerResult);
 
-  handleUploadImage(newFile, setPicture, setModal);
+  return handleUploadImage(newFile);
 };
 
 export default pickImageFrom;

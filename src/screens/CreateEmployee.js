@@ -1,8 +1,11 @@
 import React, {useState} from 'react';
-import {StyleSheet, View, Modal} from 'react-native';
-import {TextInput, Button} from 'react-native-paper';
+import {StyleSheet, View, Modal, Image} from 'react-native';
+import {TextInput, Button, ActivityIndicator, Colors} from 'react-native-paper';
 import {theme} from '~/constants';
-import {pickImageFrom} from '~/helpers';
+import {pickImageFrom} from '~/helpers/pickImageFrom';
+
+const defaultAvatar =
+  'https://kctherapy.com/wp-content/uploads/2019/09/default-user-avatar-300x293.png';
 
 const CreateEmployee = () => {
   const [name, setName] = useState('');
@@ -10,12 +13,45 @@ const CreateEmployee = () => {
   const [email, setEmail] = useState('');
   const [salary, setSalary] = useState('');
   const [picture, setPicture] = useState('');
+  const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState(false);
 
-  const uploadImage = type => pickImageFrom(type, setPicture, setModal);
+  const uploadImage = async type => {
+    setLoading(true);
+    const imgURL = await pickImageFrom(type);
+
+    if (imgURL) {
+      setPicture(imgURL);
+      setModal(false);
+      setLoading(false);
+    }
+  };
+
+  const createNewEmployee = () => {
+    const data = {
+      name,
+      phone,
+      email,
+      salary,
+      picture,
+    };
+
+    console.log('data:', {data});
+  };
 
   return (
     <View style={styles.root}>
+      <View style={styles.myImageView}>
+        <Image
+          style={styles.myImage}
+          source={{uri: picture || defaultAvatar}}
+        />
+      </View>
+      {loading ? (
+        <View>
+          <ActivityIndicator animating={true} color={Colors.red800} />
+        </View>
+      ) : null}
       <TextInput
         label="Name"
         value={name}
@@ -31,7 +67,7 @@ const CreateEmployee = () => {
         style={styles.inputStyle}
         keyboardType="number-pad"
         theme={theme}
-        onChangeText={text => setName(text)}
+        onChangeText={text => setPhone(text)}
       />
       <TextInput
         label="Email"
@@ -39,7 +75,7 @@ const CreateEmployee = () => {
         mode="outlined"
         style={styles.inputStyle}
         theme={theme}
-        onChangeText={text => setName(text)}
+        onChangeText={text => setEmail(text)}
       />
       <TextInput
         label="Salary"
@@ -47,13 +83,14 @@ const CreateEmployee = () => {
         mode="outlined"
         style={styles.inputStyle}
         theme={theme}
-        onChangeText={text => setName(text)}
+        onChangeText={text => setSalary(text)}
       />
       <Button
         style={styles.inputStyle}
         icon={!picture ? 'upload' : 'check'}
         mode="contained"
         theme={theme}
+        disabled={picture !== ''}
         onPress={() => setModal(true)}>
         Upload Image
       </Button>
@@ -62,7 +99,7 @@ const CreateEmployee = () => {
         icon="content-save"
         mode="contained"
         theme={theme}
-        onPress={() => console.log('saved')}>
+        onPress={createNewEmployee}>
         Save
       </Button>
       <Modal
@@ -96,10 +133,13 @@ const CreateEmployee = () => {
   );
 };
 
+const imageSize = 140;
+
 const styles = StyleSheet.create({
   root: {
     flex: 1,
     padding: 5,
+    paddingTop: 100,
   },
   inputStyle: {
     margin: 5,
@@ -114,6 +154,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     padding: 10,
+  },
+  myImageView: {
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  myImage: {
+    height: imageSize,
+    width: imageSize,
+    marginTop: -(imageSize / 2),
+    borderRadius: imageSize / 2,
   },
 });
 
