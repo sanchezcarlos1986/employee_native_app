@@ -35,8 +35,10 @@ const Home = ({navigation}) => {
       person.name.toLowerCase().includes(searchTerm.toLowerCase()),
     );
 
-    setSearchResults(results);
-  }, [searchTerm]);
+    Array.isArray(results) && results.length
+      ? setSearchResults(results)
+      : setSearchResults(employees);
+  }, [searchTerm, employees]);
 
   return (
     <View style={styles.root}>
