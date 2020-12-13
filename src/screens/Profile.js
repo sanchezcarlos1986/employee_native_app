@@ -3,19 +3,28 @@ import {StyleSheet, View, Image, Text, Linking, Platform} from 'react-native';
 import {LinearGradient} from 'expo-linear-gradient';
 import {Button, Card, Title} from 'react-native-paper';
 import {MaterialIcons, Entypo} from '@expo/vector-icons';
+import firebase from '~/database/firebase';
 import {theme} from '~/constants';
 
-const Profile = ({route}) => {
+const Profile = ({route, navigation}) => {
   const {
     params: {employee},
   } = route;
 
-  const {picture, name, position, email, phone, salary} = employee;
+  const {id, picture, name, position, email, phone, salary} = employee;
 
   const openDial = tel => {
     const telBase = Platform.OS === 'android' ? 'tel' : 'telprompt';
-    Linking.openURL(`${telBase}: ${tel}`);
+    Linking.openURL(`${telBase}: +${tel}`);
   };
+
+  const deleteUser = async id => {
+    const dbRef = await firebase.db.collection('employees').doc(id);
+    dbRef.delete();
+    navigation.navigate('Home');
+  };
+
+  const updateUser = async id => console.log('updateUser', {id});
 
   return (
     <View style={styles.root}>
@@ -62,14 +71,14 @@ const Profile = ({route}) => {
           icon="account-edit"
           mode="contained"
           theme={theme}
-          onPress={() => setModal(false)}>
+          onPress={() => updateUser(id)}>
           Edit
         </Button>
         <Button
           icon="delete"
           mode="contained"
           theme={theme}
-          onPress={() => setModal(false)}>
+          onPress={() => deleteUser(id)}>
           Delete
         </Button>
       </View>
