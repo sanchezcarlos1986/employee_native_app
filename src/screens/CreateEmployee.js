@@ -1,25 +1,23 @@
 import React, {useState} from 'react';
-import {
-  StyleSheet,
-  View,
-  Modal,
-  Image,
-  SafeAreaView,
-  ScrollView,
-} from 'react-native';
+import {StyleSheet, View, Modal, Image, ScrollView} from 'react-native';
 import {TextInput, Button, ActivityIndicator, Title} from 'react-native-paper';
+import {LinearGradient} from 'expo-linear-gradient';
 import {theme, defaultAvatar} from '~/constants';
-import Constants from 'expo-constants';
 import {pickImageFrom} from '~/helpers/pickImageFrom';
 import firebase from '~/database/firebase';
 
-const CreateEmployee = ({navigation}) => {
-  const [name, setName] = useState('Carlos');
-  const [phone, setPhone] = useState('9999');
-  const [email, setEmail] = useState('carlos@gmail.com');
-  const [position, setPosition] = useState('Front End Developer');
-  const [salary, setSalary] = useState('999999');
-  const [picture, setPicture] = useState('');
+const CreateEmployee = props => {
+  const {
+    navigation,
+    route: {params: employee},
+  } = props;
+
+  const [name, setName] = useState(employee?.name || '');
+  const [phone, setPhone] = useState(employee?.phone || '');
+  const [email, setEmail] = useState(employee?.email || '');
+  const [position, setPosition] = useState(employee?.position || '');
+  const [salary, setSalary] = useState(employee?.salary || '');
+  const [picture, setPicture] = useState(employee?.picture || '');
   const [modal, setModal] = useState(false);
   const [creatingUser, setCreatingUser] = useState(false);
   const [loadingImage, setLoadingImage] = useState(false);
@@ -57,28 +55,48 @@ const CreateEmployee = ({navigation}) => {
     }
   };
 
+  const updateEmployee = async () => {
+    const dbRef = await firebase.db.collection('employees').doc(employee.id);
+    dbRef.set({
+      name,
+      phone,
+      position,
+      email: email.toLowerCase(),
+      salary,
+      picture,
+    });
+
+    navigation.navigate('Home');
+  };
+
   return (
-    <SafeAreaView>
-      <ScrollView>
-        <View style={styles.root}>
-          <View style={styles.myImageView}>
-            <Image
-              style={styles.myImage}
-              source={{uri: picture || defaultAvatar}}
+    <View style={styles.root}>
+      <LinearGradient
+        colors={['#0033ff', '#6bc1ff']}
+        style={{
+          height: '20%',
+        }}
+      />
+      <View style={styles.root}>
+        <View style={styles.myImageView}>
+          <Image
+            style={styles.myImage}
+            source={{uri: picture || defaultAvatar}}
+          />
+        </View>
+        <Modal animationType="slide" visible={creatingUser || loadingImage}>
+          <View style={styles.modalUser}>
+            <Title style={styles.modalUserTitle}>
+              {creatingUser ? 'Creating User' : 'Uploading Image'}
+            </Title>
+            <ActivityIndicator
+              animating={true}
+              color={theme.colors.primary}
+              size="large"
             />
           </View>
-          <Modal animationType="slide" visible={creatingUser || loadingImage}>
-            <View style={styles.modalUser}>
-              <Title style={styles.modalUserTitle}>
-                {creatingUser ? 'Creating User' : 'Uploading Image'}
-              </Title>
-              <ActivityIndicator
-                animating={true}
-                color={theme.colors.primary}
-                size="large"
-              />
-            </View>
-          </Modal>
+        </Modal>
+        <ScrollView style={styles.form}>
           <TextInput
             label="Name"
             value={name}
@@ -125,7 +143,6 @@ const CreateEmployee = ({navigation}) => {
             icon={!picture ? 'upload' : 'check'}
             mode="contained"
             theme={theme}
-            disabled={picture !== ''}
             onPress={() => setModal(true)}>
             Upload Image
           </Button>
@@ -134,42 +151,39 @@ const CreateEmployee = ({navigation}) => {
             icon="content-save"
             mode="contained"
             theme={theme}
-            onPress={createNewEmployee}>
-            Save
+            onPress={employee ? updateEmployee : createNewEmployee}>
+            {employee ? 'Update profile' : 'Save'}
           </Button>
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modal}
-            onRequestClose={() => setModal(false)}>
-            <View style={styles.modalView}>
-              <View style={styles.modalButtonView}>
-                <Button
-                  icon="camera"
-                  mode="contained"
-                  theme={theme}
-                  onPress={() => uploadImage('camera')}>
-                  Camera
-                </Button>
-                <Button
-                  icon="image"
-                  mode="contained"
-                  theme={theme}
-                  onPress={() => uploadImage('gallery')}>
-                  Gallery
-                </Button>
-              </View>
+        </ScrollView>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modal}
+          onRequestClose={() => setModal(false)}>
+          <View style={styles.modalView}>
+            <View style={styles.modalButtonView}>
               <Button
-                icon="close"
+                icon="camera"
+                mode="contained"
                 theme={theme}
-                onPress={() => setModal(false)}>
-                Close
+                onPress={() => uploadImage('camera')}>
+                Camera
+              </Button>
+              <Button
+                icon="image"
+                mode="contained"
+                theme={theme}
+                onPress={() => uploadImage('gallery')}>
+                Gallery
               </Button>
             </View>
-          </Modal>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+            <Button icon="close" theme={theme} onPress={() => setModal(false)}>
+              Close
+            </Button>
+          </View>
+        </Modal>
+      </View>
+    </View>
   );
 };
 
@@ -178,8 +192,11 @@ const imageSize = 140;
 const styles = StyleSheet.create({
   root: {
     flex: 1,
+  },
+  form: {
     padding: 5,
-    paddingTop: Constants.statusBarHeight,
+    marginBottom: 10,
+    marginTop: 10,
   },
   inputStyle: {
     margin: 5,
@@ -197,14 +214,15 @@ const styles = StyleSheet.create({
   },
   myImageView: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 20,
   },
   myImage: {
     height: imageSize,
     width: imageSize,
     marginTop: -(imageSize / 2),
     borderRadius: imageSize / 2,
-    marginTop: Constants.statusBarHeight / 2,
+    borderColor: 'white',
+    borderWidth: 3,
   },
   modalUser: {
     flex: 1,

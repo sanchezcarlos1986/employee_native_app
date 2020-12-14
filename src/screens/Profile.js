@@ -1,5 +1,13 @@
 import React from 'react';
-import {StyleSheet, View, Image, Text, Linking, Platform} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Image,
+  Text,
+  Linking,
+  Platform,
+  Alert,
+} from 'react-native';
 import {LinearGradient} from 'expo-linear-gradient';
 import {Button, Card, Title} from 'react-native-paper';
 import {MaterialIcons, Entypo} from '@expo/vector-icons';
@@ -24,7 +32,12 @@ const Profile = ({route, navigation}) => {
     navigation.navigate('Home');
   };
 
-  const updateUser = async id => console.log('updateUser', {id});
+  const openConfirmationAlert = () => {
+    Alert.alert('Remove User', 'Are you sure?', [
+      {text: 'Yes', onPress: () => deleteUser(id)},
+      {text: 'No', onPress: () => console.log(id), style: 'cancel'},
+    ]);
+  };
 
   return (
     <View style={styles.root}>
@@ -71,14 +84,14 @@ const Profile = ({route, navigation}) => {
           icon="account-edit"
           mode="contained"
           theme={theme}
-          onPress={() => updateUser(id)}>
+          onPress={() => navigation.navigate('CreateEmployee', employee)}>
           Edit
         </Button>
         <Button
           icon="delete"
           mode="contained"
           theme={theme}
-          onPress={() => deleteUser(id)}>
+          onPress={() => openConfirmationAlert(id)}>
           Delete
         </Button>
       </View>
