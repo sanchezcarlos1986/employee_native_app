@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {StyleSheet, View, FlatList} from 'react-native';
-import {FAB, Title, TextInput, ActivityIndicator} from 'react-native-paper';
-import EmployeeCard from '~/components/EmployeeCard';
+import {FAB, Title, ActivityIndicator, TextInput} from 'react-native-paper';
+import {EmployeeCard, TextInputUI} from '~/components';
 import {theme} from '~/constants';
 import firebase from '~/database/firebase';
 
@@ -52,13 +52,11 @@ const Home = ({navigation}) => {
         </View>
       ) : Array.isArray(employees) && employees.length ? (
         <View>
-          <TextInput
-            label="Search Employee"
+          <TextInputUI
+            label="Search Doctor"
             value={searchTerm}
-            mode="outlined"
-            style={styles.inputStyle}
-            theme={theme}
             onChangeText={text => setSearchTerm(text)}
+            left={<TextInput.Icon name="account-search" />}
           />
           <FlatList
             data={searchResults}
@@ -78,7 +76,7 @@ const Home = ({navigation}) => {
         style={styles.fab}
         small
         icon="plus"
-        onPress={() => navigation.navigate('CreateEmployee')}
+        onPress={() => navigation.navigate('CreateProfile')}
       />
     </View>
   );
@@ -87,6 +85,7 @@ const Home = ({navigation}) => {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
+    backgroundColor: 'white',
   },
   inputStyle: {
     margin: 5,

@@ -2,8 +2,9 @@ import Constants from 'expo-constants';
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
-import {Home, CreateEmployee, Profile} from '~/screens';
+import {Login, Home, CreateProfile, Profile} from '~/screens';
 import {createStackNavigator} from '@react-navigation/stack';
+import {Provider as PaperProvider} from 'react-native-paper';
 
 import {navOptions} from '~/constants';
 
@@ -11,14 +12,19 @@ const Stack = createStackNavigator();
 
 const screens = [
   {
-    name: 'Home',
-    component: Home,
-    options: {title: 'Home'},
+    name: 'Login',
+    component: Login,
+    options: {headerShown: false},
   },
   {
-    name: 'CreateEmployee',
-    component: CreateEmployee,
-    options: {title: 'Create Employee Profile'},
+    name: 'Home',
+    component: Home,
+    options: {title: 'Doctors List', headerLeft: null},
+  },
+  {
+    name: 'CreateProfile',
+    component: CreateProfile,
+    options: {title: 'Create Profile'},
   },
   {
     name: 'Profile',
@@ -49,9 +55,11 @@ function App() {
 }
 
 export default () => (
-  <NavigationContainer>
-    <App />
-  </NavigationContainer>
+  <PaperProvider>
+    <NavigationContainer>
+      <App />
+    </NavigationContainer>
+  </PaperProvider>
 );
 
 const styles = StyleSheet.create({

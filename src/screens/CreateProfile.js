@@ -1,12 +1,20 @@
 import React, {useState} from 'react';
-import {StyleSheet, View, Modal, Image, ScrollView} from 'react-native';
-import {TextInput, Button, ActivityIndicator, Title} from 'react-native-paper';
+import {
+  StyleSheet,
+  View,
+  Modal,
+  Image,
+  ScrollView,
+  Dimensions,
+} from 'react-native';
+import {ActivityIndicator, Title} from 'react-native-paper';
 import {LinearGradient} from 'expo-linear-gradient';
 import {theme, defaultAvatar} from '~/constants';
+import {TextInputUI, Button} from '~/components';
 import {pickImageFrom} from '~/helpers/pickImageFrom';
 import firebase from '~/database/firebase';
 
-const CreateEmployee = props => {
+const CreateProfile = props => {
   const {
     navigation,
     route: {params: employee},
@@ -97,60 +105,39 @@ const CreateEmployee = props => {
           </View>
         </Modal>
         <ScrollView style={styles.form}>
-          <TextInput
+          <TextInputUI
             label="Name"
             value={name}
-            mode="outlined"
-            style={styles.inputStyle}
-            theme={theme}
             onChangeText={text => setName(text)}
           />
-          <TextInput
+          <TextInputUI
             label="Phone"
             value={phone}
-            mode="outlined"
-            style={styles.inputStyle}
             keyboardType="number-pad"
-            theme={theme}
             onChangeText={text => setPhone(text)}
           />
-          <TextInput
+          <TextInputUI
             label="Email"
             value={email}
-            mode="outlined"
-            style={styles.inputStyle}
-            theme={theme}
             onChangeText={text => setEmail(text)}
           />
-          <TextInput
+          <TextInputUI
             label="Position"
             value={position}
-            mode="outlined"
-            style={styles.inputStyle}
-            theme={theme}
             onChangeText={text => setPosition(text)}
           />
-          <TextInput
+          <TextInputUI
             label="Salary"
             value={salary}
-            mode="outlined"
-            style={styles.inputStyle}
-            theme={theme}
             onChangeText={text => setSalary(text)}
           />
           <Button
-            style={styles.inputStyle}
             icon={!picture ? 'upload' : 'check'}
-            mode="contained"
-            theme={theme}
             onPress={() => setModal(true)}>
             Upload Image
           </Button>
           <Button
-            style={styles.inputStyle}
             icon="content-save"
-            mode="contained"
-            theme={theme}
             onPress={employee ? updateEmployee : createNewEmployee}>
             {employee ? 'Update profile' : 'Save'}
           </Button>
@@ -162,18 +149,10 @@ const CreateEmployee = props => {
           onRequestClose={() => setModal(false)}>
           <View style={styles.modalView}>
             <View style={styles.modalButtonView}>
-              <Button
-                icon="camera"
-                mode="contained"
-                theme={theme}
-                onPress={() => uploadImage('camera')}>
+              <Button icon="camera" onPress={() => uploadImage('camera')}>
                 Camera
               </Button>
-              <Button
-                icon="image"
-                mode="contained"
-                theme={theme}
-                onPress={() => uploadImage('gallery')}>
+              <Button icon="image" onPress={() => uploadImage('gallery')}>
                 Gallery
               </Button>
             </View>
@@ -187,16 +166,19 @@ const CreateEmployee = props => {
   );
 };
 
-const imageSize = 140;
+const imageSize = 100;
 
 const styles = StyleSheet.create({
   root: {
     flex: 1,
+    backgroundColor: 'white',
+    alignItems: 'center',
   },
   form: {
-    padding: 5,
+    padding: 10,
     marginBottom: 10,
     marginTop: 10,
+    width: Dimensions.get('window').width - 50,
   },
   inputStyle: {
     margin: 5,
@@ -214,12 +196,12 @@ const styles = StyleSheet.create({
   },
   myImageView: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 0,
   },
   myImage: {
     height: imageSize,
     width: imageSize,
-    marginTop: -(imageSize / 2),
+    marginTop: -imageSize,
     borderRadius: imageSize / 2,
     borderColor: 'white',
     borderWidth: 3,
@@ -235,4 +217,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreateEmployee;
+export default CreateProfile;

@@ -7,12 +7,14 @@ import {
   Linking,
   Platform,
   Alert,
+  Dimensions,
 } from 'react-native';
-import {LinearGradient} from 'expo-linear-gradient';
-import {Button, Card, Title} from 'react-native-paper';
-import {MaterialIcons, Entypo} from '@expo/vector-icons';
+import {DataTable, Title, FAB} from 'react-native-paper';
 import firebase from '~/database/firebase';
-import {theme} from '~/constants';
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
+import {Button} from '~/components';
+import {theme, defaultAvatar} from '~/constants';
 
 const Profile = ({route, navigation}) => {
   const {
@@ -39,41 +41,66 @@ const Profile = ({route, navigation}) => {
     ]);
   };
 
+  const shareProfile = async () => {
+    if (!(await Sharing.isAvailableAsync())) {
+      alert('this device can not share :(');
+    }
+
+    const html = `<div>
+    <img width="${
+      Dimensions.get('window').width
+    }" src="${picture}" alt="${name}" />
+      <h1>${name}</h1>
+      <h4>${position}</h4>
+      <p>Email: ${email}</p>
+      <p>Phone: +${phone}</p>
+    </div>`;
+
+    const pdfOptions = {
+      html,
+      height: Dimensions.get('window').height,
+      width: Dimensions.get('window').width,
+    };
+
+    const {uri} = await Print.printToFileAsync(pdfOptions);
+
+    await Sharing.shareAsync(uri);
+  };
+
   return (
     <View style={styles.root}>
-      <LinearGradient
-        colors={['#0033ff', '#6bc1ff']}
-        style={{
-          height: '20%',
-        }}
-      />
       <View style={styles.myImageView}>
-        <Image style={styles.myImage} source={{uri: picture}} />
+        <Image
+          style={styles.myImage}
+          source={{uri: picture || defaultAvatar}}
+        />
       </View>
       <View style={styles.profileText}>
         <Title>{name}</Title>
         <Text>{position}</Text>
       </View>
-      <Card
-        style={styles.myCard}
-        onPress={() => Linking.openURL(`mailto:${email}`)}>
-        <View style={styles.cardContent}>
-          <MaterialIcons name="email" size={32} color="#6bc1ff" />
-          <Text style={styles.myText}>{email}</Text>
-        </View>
-      </Card>
-      <Card style={styles.myCard} onPress={() => openDial(phone)}>
-        <View style={styles.cardContent}>
-          <Entypo name="phone" size={32} color="#6bc1ff" />
-          <Text style={styles.myText}>{phone}</Text>
-        </View>
-      </Card>
-      <Card style={styles.myCard}>
-        <View style={styles.cardContent}>
-          <MaterialIcons name="attach-money" size={32} color="#6bc1ff" />
-          <Text style={styles.myText}>{salary}</Text>
-        </View>
-      </Card>
+
+      <DataTable.Row>
+        <DataTable.Cell>Email</DataTable.Cell>
+        <DataTable.Cell onPress={() => Linking.openURL(`mailto:${email}`)}>
+          {email}
+        </DataTable.Cell>
+      </DataTable.Row>
+
+      <DataTable.Row>
+        <DataTable.Cell>Phone</DataTable.Cell>
+        <DataTable.Cell onPress={() => openDial(phone)}>{phone}</DataTable.Cell>
+      </DataTable.Row>
+
+      <DataTable.Row>
+        <DataTable.Cell>Position</DataTable.Cell>
+        <DataTable.Cell>{position}</DataTable.Cell>
+      </DataTable.Row>
+
+      <DataTable.Row>
+        <DataTable.Cell>Salary</DataTable.Cell>
+        <DataTable.Cell>{`$${salary}`}</DataTable.Cell>
+      </DataTable.Row>
       <View
         style={{
           flexDirection: 'row',
@@ -82,19 +109,23 @@ const Profile = ({route, navigation}) => {
         }}>
         <Button
           icon="account-edit"
-          mode="contained"
-          theme={theme}
-          onPress={() => navigation.navigate('CreateEmployee', employee)}>
+          onPress={() => navigation.navigate('CreatePatient', employee)}>
           Edit
         </Button>
         <Button
           icon="delete"
-          mode="contained"
-          theme={theme}
+          theme={{colors: {primary: '#c0392b'}}}
           onPress={() => openConfirmationAlert(id)}>
           Delete
         </Button>
       </View>
+      <FAB
+        color="white"
+        style={styles.fab}
+        small
+        icon="share-variant"
+        onPress={shareProfile}
+      />
     </View>
   );
 };
@@ -104,7 +135,7 @@ const imageSize = 150;
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#eee',
+    backgroundColor: 'white',
   },
   myImageView: {
     alignItems: 'center',
@@ -112,7 +143,8 @@ const styles = StyleSheet.create({
   myImage: {
     height: imageSize,
     width: imageSize,
-    marginTop: -(imageSize / 2),
+    marginTop: imageSize / 3,
+    marginBottom: 20,
     borderRadius: imageSize / 2,
   },
   profileText: {
@@ -129,6 +161,13 @@ const styles = StyleSheet.create({
   },
   myText: {
     marginLeft: 5,
+  },
+  fab: {
+    backgroundColor: theme.colors.primary,
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    bottom: 0,
   },
 });
 
